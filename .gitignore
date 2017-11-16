@@ -1,6 +1,7 @@
 .DS_STORE
 # Vendor Files
 /vendor 
+.tmp/
 
 # Test binary, build with `go test -c`
 *.test

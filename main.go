@@ -15,10 +15,17 @@ limitations under the License. */
 package main
 
 import (
+	"log"
+	"net/http"
+	"io"
+	"os"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/sonatype-nexus-community/nexus-webhook-publish/webhook"	
 )
+
+const NEXUS_REPO_BASE_URL = "http://localhost:8081/repository/"
+const TEMP_DIR = ".tmp"
 
 func setupRouter() *gin.Engine {
 	r := gin.Default()
@@ -44,5 +51,38 @@ func publishPackage(c *gin.Context) {
 	if err != nil {
 		c.AbortWithError(500, err)
 	}
-	// do something with component
+	downloadFile(&component)
+}
+
+func downloadFile(c *webhook.Component) {
+	var fullUrl string
+	var fileName string
+	if c.Component.Format == "npm" {
+		fileName = TEMP_DIR + "/" + c.Component.Name + "-" + c.Component.Version + ".tgz"
+		fullUrl = NEXUS_REPO_BASE_URL + c.RepositoryName + "/" + c.Component.Name + "/-/" + fileName 
+	}
+
+	if _, err := os.Stat(TEMP_DIR); os.IsNotExist(err) {
+		os.Mkdir(TEMP_DIR, 0755)
+	}
+
+	out, err := os.Create(fileName)
+	defer out.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resp, err := http.Get(fullUrl)
+	defer resp.Body.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if n, err := io.Copy(out, resp.Body); err != nil {
+		log.Fatal(err)
+	} else {
+		log.Println("Downloaded", fileName, "with", n, "bytes")
+	}
 }
