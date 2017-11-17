@@ -48,7 +48,7 @@ Right now this is pretty WIP, but you can test it out by:
 - Install npm (likely version 4, as there is a bug in 5 currently that prevents publishing tarballs)
 - Login on npm using `npm login` as the user that you will be publishing to npm as
 
-Now Nexus Repository Manager should send a webhook over to this service. If the event is for an npm component (what we refer to new packages as), it will shell out to npm and publish it.
+Now Nexus Repository Manager should send a webhook over to this service. If the event is for an npm component (what we refer to new packages as), it will shell out to npm and publish it. Assumedly if you wanted to limit this just to a specific repo, some code can be added to do that by checking c.RepositoryName in one of the functions where component is being used.
 
 ## The Fine Print
 
