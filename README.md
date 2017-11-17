@@ -40,7 +40,8 @@ From there you can play around with it, build it, etc...
 Right now this is pretty WIP, but you can test it out by:
 
 - Configuring a [Repository Webhook Capability](https://help.sonatype.com/display/NXRM3/Webhooks) in Nexus Repository Manager, specifically the component event
-- Set the secret key in the capability to something good! I have it set to duckduckgoose so you'll be so embarrassed you need to change it
+- Set the secret key in the capability to something good! I have it set to duckduckgoose so you'll be so embarrassed you need to change it (this is a const in `main.go` for those looking)
+- Ensure the `NEXUS_REPO_BASE_URL` is set to whatever your Nexus Repo instance is, I have it defaulted to how Nexus Repo runs by default (also in `main.go`)
 - Set the address to send the webhook to `http://localhost:8000/publish` or wherever this go app will end up running
 - Modify `webhook/webhook.go` and set your secret key in there
 - `go run main.go`
