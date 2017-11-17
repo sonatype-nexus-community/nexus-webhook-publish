@@ -91,7 +91,7 @@ func downloadFile(c *webhook.Component) {
 }
 
 func publishNpmPackage(name string) {
-	cmd := exec.Command("npm","publish", name, "--registry " + NEXUS_REPO_BASE_URL + "npm-internal/")
+	cmd := exec.Command("npm","publish", name)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
