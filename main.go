@@ -60,6 +60,8 @@ func downloadFile(c *webhook.Component) {
 	if c.Component.Format == "npm" {
 		fileName = TEMP_DIR + "/" + c.Component.Name + "-" + c.Component.Version + ".tgz"
 		fullUrl = NEXUS_REPO_BASE_URL + c.RepositoryName + "/" + c.Component.Name + "/-/" + fileName 
+	} else {
+		return
 	}
 
 	if _, err := os.Stat(TEMP_DIR); os.IsNotExist(err) {
