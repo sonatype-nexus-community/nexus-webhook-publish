@@ -15,6 +15,8 @@ limitations under the License. */
 package main
 
 import (
+	"fmt"
+	"errors"
 	"log"
 	"net/http"
 	"io"
@@ -55,20 +57,17 @@ func publishPackage(c *gin.Context) {
 }
 
 func downloadFile(c *webhook.Component) {
-	var fullUrl string
-	var fileName string
-	if c.Component.Format == "npm" {
-		fileName = TEMP_DIR + "/" + c.Component.Name + "-" + c.Component.Version + ".tgz"
-		fullUrl = NEXUS_REPO_BASE_URL + c.RepositoryName + "/" + c.Component.Name + "/-/" + fileName 
-	} else {
-		return
+	fileName, fullUrl, err := getFileNameAndDownloadUrl(c)
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	if _, err := os.Stat(TEMP_DIR); os.IsNotExist(err) {
 		os.Mkdir(TEMP_DIR, 0755)
 	}
 
-	out, err := os.Create(fileName)
+	out, err := os.Create(TEMP_DIR + "/" + fileName)
 	defer out.Close()
 
 	if err != nil {
@@ -86,5 +85,16 @@ func downloadFile(c *webhook.Component) {
 		log.Fatal(err)
 	} else {
 		log.Println("Downloaded", fileName, "with", n, "bytes")
+	}
+}
+
+func getFileNameAndDownloadUrl(c *webhook.Component) (fileName string, downloadUrl string, err error) {
+	switch format := c.Component.Format; format {
+	case "npm":
+		fileName := c.Component.Name + "-" + c.Component.Version + ".tgz"
+		fullUrl := NEXUS_REPO_BASE_URL + c.RepositoryName + "/" + c.Component.Name + "/-/" + fileName 
+		return fileName, fullUrl, nil
+	default:
+		return "", "", errors.New("Unsupported format")
 	}
 }
