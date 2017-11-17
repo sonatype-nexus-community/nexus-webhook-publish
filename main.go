@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"io"
 	"os"
+	"os/exec"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/sonatype-nexus-community/nexus-webhook-publish/webhook"	
@@ -85,7 +86,16 @@ func downloadFile(c *webhook.Component) {
 		log.Fatal(err)
 	} else {
 		log.Println("Downloaded", fileName, "with", n, "bytes")
+		publishNpmPackage(TEMP_DIR + "/" + fileName)
 	}
+}
+
+func publishNpmPackage(name string) {
+	cmd := exec.Command("npm","publish", name, "--registry " + NEXUS_REPO_BASE_URL + "npm-internal/")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	fmt.Println(err)
 }
 
 func getFileNameAndDownloadUrl(c *webhook.Component) (fileName string, downloadUrl string, err error) {
