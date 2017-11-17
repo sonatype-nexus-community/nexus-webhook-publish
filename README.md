@@ -21,18 +21,17 @@ limitations under the License.
 
 ## What is this?
 
-This a lil Golang app that gets a Webhook payload from Nexus Repository Manager 3.1+ and do something with it.
+This a lil Golang app that gets a Webhook payload from Nexus Repository Manager 3.1+ and publish to currently:
 
-## What will it eventually do?
+- npmjs.org
 
-Eventually it will take that webhook, download the component, and then publish it to the public repo of your choice.
+The primary use case for this app is if you are publishing npm components to Nexus Repository but you also want to publish them to npmjs (and eventually other public repos). You COULD do this as a part of your CI build, but why not use Golang to do it!
 
 ## Developing
 
 To get up and running you'll need Golang and `go dep` installed. Once you've done that:
 
 - `dep ensure` from the root
-- `go run main.go`
 
 From there you can play around with it, build it, etc...
 
@@ -45,8 +44,10 @@ Right now this is pretty WIP, but you can test it out by:
 - Set the address to send the webhook to `http://localhost:8000/publish` or wherever this go app will end up running
 - Modify `webhook/webhook.go` and set your secret key in there
 - `go run main.go`
+- Install npm (likely version 4, as there is a bug in 5 currently that prevents publishing tarballs)
+- Login on npm using `npm login` as the user that you will be publishing to npm as
 
-Now Nexus Repository Manager should send a webhook over, and it should register with this tiny app!
+Now Nexus Repository Manager should send a webhook over to this service. If the event is for an npm component (what we refer to new packages as), it will shell out to npm and publish it.
 
 ## The Fine Print
 
