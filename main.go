@@ -95,7 +95,10 @@ func publishNpmPackage(name string) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 }
 
 func getFileNameAndDownloadUrl(c *webhook.Component) (fileName string, downloadUrl string, err error) {
